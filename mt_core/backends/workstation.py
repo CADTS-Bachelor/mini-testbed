@@ -1,5 +1,2 @@
-# coding=UTF-8
-
-# TODO 后台组:启动VMware Workstation虚拟机
-def power_on(vm_path):
-    pass
+import os
+os.system('g: && cd g:/vmware && vmrun.exe -T ws start "virtual machine/win7/Windows 7 x64.vmx"')
