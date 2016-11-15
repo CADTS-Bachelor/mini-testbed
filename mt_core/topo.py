@@ -6,7 +6,6 @@ try:
     import defusedxml.cElementTree as ET
 except ImportError:
     import defusedxml.ElementTree as ET
-import sys
 import json
 
 
