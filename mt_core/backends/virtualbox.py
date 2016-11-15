@@ -3,7 +3,16 @@
 import os
 import  virtualbox.library_ext.machine
 from vboxapi import VirtualBoxManager     #引入
+
 #  TODO 后台组:启动VirtualBox虚拟机
+from mt_core.backends import Hypervisor
+
+
+# TODO override all methods
+class VirtualBox(Hypervisor):
+    pass
+
+
 def power_on():
     mgr = VirtualBoxManager(None, None)
     vbox = mgr.vbox

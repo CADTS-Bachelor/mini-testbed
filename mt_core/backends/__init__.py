@@ -26,18 +26,23 @@ class Hypervisor:
         """
         pass
 
-    def set_cpu_count(self, cpu_count):
+    def set_cpu_count(self, vm, cpu_count):
         """
         设置CPU个数
+        :param vm: 虚拟机路径
         :param cpu_count: CPU个数
         """
         pass
 
-    def set_ram(self, ram):
+    def set_ram(self, vm, ram):
         """
         设置内存大小
+        :param vm: 虚拟机路径
         :param ram: 内存大小,以MB为单位
         """
+        pass
+
+    def wait_for_running(self, vm, timeout_seconds=-1):
         pass
 
     def power_on(self, vm):
@@ -55,10 +60,10 @@ class Hypervisor:
     def restart_guest(self, vm):
         pass
 
-    def create_vlan(self, vm, vlan_name):
+    def create_vlan(self, vlan_name):
         pass
 
-    def delete_vlan(self, vm, vlan_name):
+    def delete_vlan(self, vlan_name):
         pass
 
     def add_nic(self, vm, index, vlan_name):
@@ -110,3 +115,16 @@ class Hypervisor:
         :param name: 快照名称
         """
 
+import workstation
+import virtualbox
+
+HYPERVISOR_WORKSTATION = "workstation"
+HYPERVISOR_VIRTUALBOX = "virtualbox"
+
+def create_hypervisor(hypervisor_type, *args, **kwargs):
+    if hypervisor_type == HYPERVISOR_WORKSTATION:
+        workstation.Workstation(*args, **kwargs)
+    elif hypervisor_type == HYPERVISOR_VIRTUALBOX:
+        virtualbox.VirtualBox(*args, **kwargs)
+    else:
+        raise NotImplementedError("hypervisor {} not support".format(hypervisor_type))

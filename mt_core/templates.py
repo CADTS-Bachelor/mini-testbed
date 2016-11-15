@@ -1,8 +1,9 @@
 # coding=UTF-8
 
 class NodeTemplate:
-    def __init__(self, template_id, emulation, guest_info=None):
+    def __init__(self, template_id, vm_path, emulation, guest_info=None):
         self.template_id = template_id
+        self.vm_path = vm_path
         self.emulation = emulation
         self.guest_info = guest_info
 

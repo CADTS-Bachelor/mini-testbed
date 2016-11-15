@@ -117,7 +117,24 @@ class VirtualLink:
         else:
             self.port1 = port2
             self.port2 = port1
+        self.port1.to_port = port2
+        self.port2.to_port = port1
+
+        if port1.node.category == VirtualNode.CATEGORY_SWITCH:
+            self.is_to_switch = True
+            self.switch_node = port1.node
+        elif port2.node.category == VirtualNode.CATEGORY_SWITCH:
+            self.is_to_switch = True
+            self.switch_node = port2.node
+        else:
+            self.is_to_switch = False
+            self.switch_node = None
+
         self.name = u"{}--{}".format(self.port1.id(), self.port2.id())
+        self.vlan_name = self.switch_node.name if self.is_to_switch else self.name
+
+        self.port1.link = self
+        self.port2.link = self
 
     def __str__(self):
         return self.__unicode__().encode("UTF-8")
@@ -182,15 +199,21 @@ def load_2_0(topo, topo_element):
     for node in topo.iter_nodes():
         for port in node.iter_ports():
             if not port.to_port:
-                port.to_port = topo.check_node(port.to_node_name).check_port(port.to_port_index)
-                port.to_port.to_port = port
-                link = VirtualLink(port, port.to_port)
+                other_port = topo.check_node(port.to_node_name).check_port(port.to_port_index)
+                link = VirtualLink(port, other_port)
                 topo.add_link(link)
 
 
-def parse_xml(filename):
-    tree = ET.parse(filename)
-    topo_element = tree.getroot()
+def parse_xml_string(xml_content):
+    return _parse_xml(ET.fromstring(xml_content))
+
+
+def parse_xml_file(filename):
+    return _parse_xml(ET.parse(filename))
+
+
+def _parse_xml(xml_tree):
+    topo_element = xml_tree.getroot()
     topo = VirtualTopo(json.loads(topo_element.get('name')))
     version = topo_element.get('_v')
     if version == '2.0':
@@ -201,7 +224,7 @@ def parse_xml(filename):
 
 
 if __name__ == '__main__':
-    topo = parse_xml("../data/TX2015.xml")
+    topo = parse_xml_file("../data/TX2015.xml")
     print topo
     for node in topo.iter_nodes():
         print node
