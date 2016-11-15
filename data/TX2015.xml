@@ -1,0 +1,210 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<topo name="&quot;TX2015-3&quot;" _v="2.0">
+    <node templateId="/switch" name="交换机1" category="Switch" emulation="" os="" image="/images/工作组交换机.png" x="205"
+          y="408">
+        <interface name="" index="1" toNode="IDS(Snort)" toIndex="1"/>
+    </node>
+    <node templateId="/vsphere/network/IDS-Snort" name="IDS(Snort)" category="Host" emulation="vsphere" os="linux"
+          image="/images/实时通信服务器.png" x="417" y="384">
+        <config name="cpuCount" type="number" value="1" unit="个"/>
+        <config name="mirrorPorts" index="0">
+            <config name="portIndex" type="number" value="1" unit=""/>
+            <config name="ports" index="0">
+                <config name="nodeName" type="string" value="攻击机1" unit=""/>
+                <config name="portIndex" type="number" value="1" unit=""/>
+            </config>
+            <config name="ports" index="1">
+                <config name="nodeName" type="string" value="攻击机2" unit=""/>
+                <config name="portIndex" type="number" value="1" unit=""/>
+            </config>
+            <config name="ports" index="2">
+                <config name="nodeName" type="string" value="BT5" unit=""/>
+                <config name="portIndex" type="number" value="1" unit=""/>
+            </config>
+            <config name="ports" index="3">
+                <config name="nodeName" type="string" value="WordPress网站" unit=""/>
+                <config name="portIndex" type="number" value="1" unit=""/>
+            </config>
+            <config name="ports" index="4">
+                <config name="nodeName" type="string" value="Windows 2003 DNS 服务器" unit=""/>
+                <config name="portIndex" type="number" value="1" unit=""/>
+            </config>
+            <config name="ports" index="5">
+                <config name="nodeName" type="string" value="内网WindowsXP目标机" unit=""/>
+                <config name="portIndex" type="number" value="1" unit=""/>
+            </config>
+            <config name="ports" index="6">
+                <config name="nodeName" type="string" value="内网Linux目标机" unit=""/>
+                <config name="portIndex" type="number" value="1" unit=""/>
+            </config>
+            <config name="ports" index="7">
+                <config name="nodeName" type="string" value="内网域控" unit=""/>
+                <config name="portIndex" type="number" value="1" unit=""/>
+            </config>
+            <config name="ports" index="8">
+                <config name="nodeName" type="string" value="路由器" unit=""/>
+                <config name="portIndex" type="number" value="1" unit=""/>
+            </config>
+        </config>
+        <config name="ram" type="number" value="2048" unit="MB"/>
+        <interface name="" index="1" toNode="交换机1" toIndex="1">
+            <config name="defaultGateway" type="ip" value="10.10.10.10" unit=""/>
+            <config name="dns" type="ip" value="10.10.10.10" unit=""/>
+            <config name="ip" type="ip" value="10.10.10.1" unit=""/>
+            <config name="netmask" type="ip" value="255.255.255.0" unit=""/>
+        </interface>
+    </node>
+    <node templateId="/vsphere/standard/TX2014/WebServer" name="WordPress网站" category="Host" emulation="vsphere"
+          os="linux" image="/images/Web服务器.png" x="522" y="55">
+        <config name="cpuCount" type="number" value="1" unit="个"/>
+        <config name="ram" type="number" value="1024" unit="MB"/>
+        <interface name="" index="1" toNode="DMZ交换机" toIndex="3">
+            <config name="defaultGateway" type="ip" value="172.16.26.1" unit=""/>
+            <config name="dns" type="ip" value="" unit=""/>
+            <config name="ip" type="ip" value="172.16.26.10" unit=""/>
+            <config name="netmask" type="ip" value="255.255.255.0" unit=""/>
+        </interface>
+    </node>
+    <node templateId="/switch" name="DMZ交换机" category="Switch" emulation="" os="" image="/images/工作组交换机.png" x="390"
+          y="178.5">
+        <interface name="" index="1" toNode="路由器" toIndex="2"/>
+        <interface name="" index="2" toNode="Windows 2003 DNS 服务器" toIndex="1"/>
+        <interface name="" index="3" toNode="WordPress网站" toIndex="1"/>
+    </node>
+    <node templateId="/vsphere/common/dns2003" name="Windows 2003 DNS 服务器" category="Host" emulation="vsphere"
+          os="windows" image="/images/CMS服务器.png" x="334.85" y="50.2">
+        <config name="cpuCount" type="number" value="1" unit="个"/>
+        <config name="dns_list" index="0">
+            <config name="ip" type="ip" value="172.16.26.10" unit=""/>
+            <config name="name" type="string" value="www.blog.com" unit=""/>
+        </config>
+        <config name="ram" type="number" value="1024" unit="MB"/>
+        <interface name="" index="1" toNode="DMZ交换机" toIndex="2">
+            <config name="defaultGateway" type="ip" value="172.16.26.1" unit=""/>
+            <config name="dns" type="ip" value="" unit=""/>
+            <config name="ip" type="ip" value="172.16.26.253" unit=""/>
+            <config name="netmask" type="ip" value="255.255.255.0" unit=""/>
+        </interface>
+    </node>
+    <node templateId="/vsphere/standard/TX2014/Router" name="路由器" category="Host" emulation="vsphere" os="linux"
+          image="/images/路由器.png" x="405" y="297">
+        <config name="cpuCount" type="number" value="1" unit="个"/>
+        <config name="ram" type="number" value="1024" unit="MB"/>
+        <interface name="" index="1" toNode="内网交换机" toIndex="4">
+            <config name="defaultGateway" type="ip" value="" unit=""/>
+            <config name="dns" type="ip" value="" unit=""/>
+            <config name="ip" type="ip" value="172.16.36.1" unit=""/>
+            <config name="netmask" type="ip" value="255.255.255.0" unit=""/>
+        </interface>
+        <interface name="" index="2" toNode="DMZ交换机" toIndex="1">
+            <config name="defaultGateway" type="ip" value="" unit=""/>
+            <config name="dns" type="ip" value="" unit=""/>
+            <config name="ip" type="ip" value="172.16.26.1" unit=""/>
+            <config name="netmask" type="ip" value="255.255.255.0" unit=""/>
+        </interface>
+        <interface name="" index="3" toNode="外网交换机" toIndex="1">
+            <config name="defaultGateway" type="ip" value="" unit=""/>
+            <config name="dns" type="ip" value="" unit=""/>
+            <config name="ip" type="ip" value="172.16.16.1" unit=""/>
+            <config name="netmask" type="ip" value="255.255.255.0" unit=""/>
+        </interface>
+    </node>
+    <node templateId="/vsphere/standard/TX2014/WinXp505Target" name="内网WindowsXP目标机" category="Host" emulation="vsphere"
+          os="windows" image="/images/虚拟PC.png" x="44.19999999999999" y="157.6">
+        <config name="cpuCount" type="number" value="1" unit="个"/>
+        <config name="dcAddress" type="ip" value="172.16.36.12" unit=""/>
+        <config name="dcName" type="string" value="test.net" unit=""/>
+        <config name="dcPassword" type="string" value="!QAZ2wsx" unit=""/>
+        <config name="dcUserName" type="string" value="administrator" unit=""/>
+        <config name="ram" type="number" value="1024" unit="MB"/>
+        <interface name="" index="1" toNode="内网交换机" toIndex="1">
+            <config name="defaultGateway" type="ip" value="172.16.36.1" unit=""/>
+            <config name="dns" type="ip" value="172.16.36.12" unit=""/>
+            <config name="ip" type="ip" value="172.16.36.13" unit=""/>
+            <config name="netmask" type="ip" value="255.255.255.0" unit=""/>
+        </interface>
+    </node>
+    <node templateId="/vsphere/standard/TX2014/LinuxTarget" name="内网Linux目标机" category="Host" emulation="vsphere"
+          os="linux" image="/images/虚拟PC.png" x="31.299999999999997" y="283.55">
+        <config name="cpuCount" type="number" value="1" unit="个"/>
+        <config name="ram" type="number" value="1024" unit="MB"/>
+        <interface name="" index="1" toNode="内网交换机" toIndex="2">
+            <config name="defaultGateway" type="ip" value="172.16.36.1" unit=""/>
+            <config name="dns" type="ip" value="" unit=""/>
+            <config name="ip" type="ip" value="172.16.36.11" unit=""/>
+            <config name="netmask" type="ip" value="255.255.255.0" unit=""/>
+        </interface>
+    </node>
+    <node templateId="/switch" name="内网交换机" category="Switch" emulation="" os="" image="/images/工作组交换机.png" x="231.75"
+          y="274.05">
+        <interface name="" index="1" toNode="内网WindowsXP目标机" toIndex="1"/>
+        <interface name="" index="2" toNode="内网Linux目标机" toIndex="1"/>
+        <interface name="" index="3" toNode="内网域控" toIndex="1"/>
+        <interface name="" index="4" toNode="路由器" toIndex="1"/>
+    </node>
+    <node templateId="/vsphere/standard/TX2014/DomainController" name="内网域控" category="Host" emulation="vsphere"
+          os="windows" image="/images/管理服务器.png" x="140.45000000000002" y="408.25">
+        <config name="cpuCount" type="number" value="1" unit="个"/>
+        <config name="dns_list" index="0">
+            <config name="ip" type="ip" value="172.16.26.10" unit=""/>
+            <config name="name" type="string" value="www.blog.com" unit=""/>
+        </config>
+        <config name="ram" type="number" value="1024" unit="MB"/>
+        <interface name="" index="1" toNode="内网交换机" toIndex="3">
+            <config name="defaultGateway" type="ip" value="172.16.36.1" unit=""/>
+            <config name="dns" type="ip" value="" unit=""/>
+            <config name="ip" type="ip" value="172.16.36.12" unit=""/>
+            <config name="netmask" type="ip" value="255.255.255.0" unit=""/>
+        </interface>
+    </node>
+    <node templateId="/switch" name="外网交换机" category="Switch" emulation="" os="" image="/images/工作组交换机.png"
+          x="576.4000000000001" y="306.25">
+        <interface name="" index="1" toNode="路由器" toIndex="3"/>
+        <interface name="" index="2" toNode="BT5" toIndex="1"/>
+        <interface name="" index="3" toNode="攻击机1" toIndex="1"/>
+        <interface name="" index="4" toNode="攻击机2" toIndex="1"/>
+    </node>
+    <node templateId="/vsphere/standard/TX2014/WindowsXP" name="攻击机1" category="Host" emulation="vsphere" os="windows"
+          image="/images/计算机.png" x="787.95" y="358">
+        <config name="cpuCount" type="number" value="2" unit="个"/>
+        <config name="ram" type="number" value="2048" unit="MB"/>
+        <config name="route_list" index="0">
+            <config name="networkLength" type="number" value="8" unit=""/>
+            <config name="nicIp" type="ip" value="10.2.1.1" unit=""/>
+            <config name="targetNet" type="ip" value="10.0.0.0" unit=""/>
+        </config>
+        <interface name="" index="1" toNode="外网交换机" toIndex="3">
+            <config name="defaultGateway" type="ip" value="172.16.16.1" unit=""/>
+            <config name="dns" type="ip" value="172.16.26.253" unit=""/>
+            <config name="ip" type="ip" value="172.16.16.8" unit=""/>
+            <config name="netmask" type="ip" value="255.255.255.0" unit=""/>
+        </interface>
+    </node>
+    <node templateId="/vsphere/standard/TX2014/WindowsXP" name="攻击机2" category="Host" emulation="vsphere" os="windows"
+          image="/images/计算机.png" x="671.6" y="472">
+        <config name="cpuCount" type="number" value="2" unit="个"/>
+        <config name="ram" type="number" value="2048" unit="MB"/>
+        <config name="route_list" index="0">
+            <config name="networkLength" type="number" value="8" unit=""/>
+            <config name="nicIp" type="ip" value="10.2.1.1" unit=""/>
+            <config name="targetNet" type="ip" value="10.0.0.0" unit=""/>
+        </config>
+        <interface name="" index="1" toNode="外网交换机" toIndex="4">
+            <config name="defaultGateway" type="ip" value="172.16.16.1" unit=""/>
+            <config name="dns" type="ip" value="172.16.26.253" unit=""/>
+            <config name="ip" type="ip" value="172.16.16.5" unit=""/>
+            <config name="netmask" type="ip" value="255.255.255.0" unit=""/>
+        </interface>
+    </node>
+    <node templateId="/vsphere/standard/TX2014/BT5" name="BT5" category="Host" emulation="vsphere" os="linux"
+          image="/images/计算机.png" x="790.8" y="193.7">
+        <config name="cpuCount" type="number" value="2" unit="个"/>
+        <config name="ram" type="number" value="2048" unit="MB"/>
+        <interface name="" index="1" toNode="外网交换机" toIndex="2">
+            <config name="defaultGateway" type="ip" value="172.16.16.1" unit=""/>
+            <config name="dns" type="ip" value="" unit=""/>
+            <config name="ip" type="ip" value="172.16.16.9" unit=""/>
+            <config name="netmask" type="ip" value="255.255.255.0" unit=""/>
+        </interface>
+    </node>
+</topo>
