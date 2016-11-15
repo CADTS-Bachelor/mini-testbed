@@ -12,11 +12,11 @@ class GuestInfo:
 
 class Hypervisor:
     # 完全克隆
-    CLONE_FULL = 0
+    CLONE_FULL = "full"
     # 链接克隆
-    CLONE_LINKED = 1
+    CLONE_LINK = "link"
 
-    def clone(self, src_vm, dst_vm, type=CLONE_LINKED):
+    def clone(self, src_vm, dst_vm, type=CLONE_LINK):
         """
         克隆虚拟机
         :param src_vm: 模板虚拟机路径
