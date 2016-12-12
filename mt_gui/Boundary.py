@@ -1,10 +1,11 @@
-# -*- coding:utf-8 -*-
+#  -*- coding:utf-8 -*-
 from PyQt4.QtGui import *
 from PyQt4.QtCore import *
 from PyQt4 import QtGui, QtCore
 import sys
 
 QTextCodec.setCodecForTr(QTextCodec.codecForName("utf8"))
+
 
 class MainWindow(QtGui.QMainWindow):
     def __init__(self):
@@ -15,7 +16,7 @@ class MainWindow(QtGui.QMainWindow):
         self.createActions()
         self.createMenus()
 
-        self.setWindowTitle(u"测试平台")     #u"XXX"格式可输入中文
+        self.setWindowTitle(u"测试平台")  # u"XXX"格式可输入中文
         self.resize(1000, 500)
 
         self.setWindowFlags(Qt.WindowMinMaxButtonsHint)  #######允许窗体最大最小化
@@ -50,7 +51,7 @@ class MainWindow(QtGui.QMainWindow):
         self.fileMenu = QtGui.QMenu("&File", self)
         self.fileMenu.addAction(self.openAct)
         self.fileMenu.addAction(self.saveAct)
-        self.fileMenu.addSeparator()      #添加分割线
+        self.fileMenu.addSeparator()  # 添加分割线
         self.fileMenu.addAction(self.exitAct)
 
         self.helpMenu = QtGui.QMenu("&Help", self)
@@ -61,114 +62,240 @@ class MainWindow(QtGui.QMainWindow):
         self.menuBar().addMenu(self.helpMenu)
 
 
-class StockDialog(QDialog):
+class StockDialog(QTabWidget):
     def __init__(self, parent=None):
         super(StockDialog, self).__init__(parent)
 
-        mainSplitter = QSplitter(Qt.Horizontal)     #水平窗口切分条，改变多窗口部件的大小
+        self.mainSplitter = QSplitter(Qt.Horizontal)  # 水平窗口切分条，改变多窗口部件的大小
 
-        Contentlist = QListWidget(mainSplitter)
-        Contentlist.insertItem(0, self.tr("列表1"))
-        Contentlist.insertItem(1, self.tr("列表2"))
-        Contentlist.insertItem(2, self.tr("列表3"))
+        contentlist = QListWidget(self.mainSplitter)
+        contentlist.insertItem(0, self.tr("列表1"))
+        contentlist.insertItem(1, self.tr("列表2"))
 
-        frame = QFrame(mainSplitter)
-        ChangeablePart=QGridLayout(frame)
-        rightpart1=Rightpart1()
-        ChangeablePart.addWidget(rightpart1)
+        changeablePart = QTabWidget(self.mainSplitter)
+        rightpart2 = CreatPart()
+        rightpart3 = TestPart()
+        changeablePart.addTab(rightpart2, u"新建")
+        changeablePart.addTab(rightpart3, u"实验")
 
-        mainLayout = QHBoxLayout(self)
-        mainLayout.addWidget(mainSplitter)
+        self.connect(contentlist, SIGNAL("currentRowChanged(int)"),
+                     rightpart2.introductionEdit, SLOT("setCurrentIndex(int)"))
+
+        self.connect(contentlist, SIGNAL("currentRowChanged(int)"),
+                     rightpart2.topoEdit, SLOT("setCurrentIndex(int)"))
+
+        self.connect(contentlist, SIGNAL("currentRowChanged(int)"),
+                     rightpart3.introductionShow, SLOT("setCurrentIndex(int)"))
+
+        self.connect(contentlist, SIGNAL("currentRowChanged(int)"),
+                     rightpart3.informationShow, SLOT("setCurrentIndex(int)"))
+
+        self.connect(contentlist, SIGNAL("currentRowChanged(int)"),
+                     rightpart3.topoShow, SLOT("setCurrentIndex(int)"))
+
+        mainLayout = QHBoxLayout()
+        mainLayout.addWidget(self.mainSplitter)
+        self.mainSplitter.setStretchFactor(0, 1)
+        self.mainSplitter.setStretchFactor(1, 2)
         self.setLayout(mainLayout)
 
 
-class Rightpart1(QDialog):
-    def __init__(self,parent=None):
-        super(Rightpart1,self).__init__(parent)
+class TestPart(QDialog):
+    def __init__(self, parent=None):
+        super(TestPart, self).__init__(parent)
 
-        Introduction = QStackedWidget()
-        Introduction.setFrameStyle(QFrame.Panel | QFrame.Raised)
-        text1 = Text1()
-        text2 = Text2()
-        text3 = Text3()
-        Introduction.addWidget(text1)
-        Introduction.addWidget(text2)
-        Introduction.addWidget(text3)
+        self.introLabel = QLabel(u"实验背景")
+        self.introLabel.setAlignment(QtCore.Qt.AlignCenter)
+        self.introductionShow = QStackedWidget()
+        self.introductionShow.setFrameStyle(QFrame.Panel | QFrame.Raised)
+        introductionText1 = IntroductionText1()
+        introductionText2  = IntroductionText2()
+        self.introductionShow.addWidget(introductionText1)
+        self.introductionShow.addWidget(introductionText2)
+        self.introLabel.setBuddy(self.introductionShow)
 
-        MianCombo = QComboBox()
-        MianCombo.addItem(u"节点信息")
-        MianCombo.addItem(u"拓扑结构")
+        LeftLayout = QVBoxLayout()
+        LeftLayout.addWidget(self.introLabel)
+        LeftLayout.addWidget(self.introductionShow)
 
-        Information = QStackedWidget()
-        Information.setFrameStyle(QFrame.Panel | QFrame.Raised)
-        text4 = Text4()
-        text5 = Text5()
-        Information.addWidget(text4)
-        Information.addWidget(text5)
+        self.testCombo = QComboBox()
+        self.testCombo.addItem(u"节点信息")
+        self.testCombo.addItem(u"拓扑结构")
 
-        NewPushButton = QPushButton(self.tr("新建"))
-        TestPushButton = QPushButton(self.tr("实验"))
-        DeletePushButton = QPushButton(self.tr("删除"))
+        self.informationShow = QStackedWidget()
+        self.informationShow.setFrameStyle(QFrame.Panel | QFrame.Raised)
+        infoText1 = InfoText1()
+        infoText2 = InfoText2()
+        self.informationShow.addWidget(infoText1)
+        self.informationShow.addWidget(infoText2)
 
-        ComboLayout = QVBoxLayout()  # 布局，原则是从最小分割开始直到主布局
-        ComboLayout.addWidget(MianCombo)
-        ComboLayout.addWidget(Information)
-
-        UpLayout = QHBoxLayout()
-        UpLayout.addWidget(Introduction)
-        UpLayout.addLayout(ComboLayout)
-
-        DownLayout = QHBoxLayout()
-        DownLayout.addWidget(NewPushButton)
-        DownLayout.addWidget(TestPushButton)
-        DownLayout.addWidget(DeletePushButton)
+        self.topoShow = QStackedWidget()
+        self.topoShow.setFrameStyle(QFrame.Panel | QFrame.Raised)
+        topoText1 = TopoText1()
+        topoText2 = TopoText2()
+        self.topoShow.addWidget(topoText1)
+        self.topoShow.addWidget(topoText2)
 
         RightLayout = QVBoxLayout()
-        RightLayout.addLayout(UpLayout)
-        RightLayout.addLayout(DownLayout)
-        self.setLayout(RightLayout)
+        RightLayout.addWidget(self.testCombo)
+        RightLayout.addWidget(self.informationShow)
+
+        TestLayout = QHBoxLayout()
+        TestLayout.addLayout(LeftLayout)
+        TestLayout.addLayout(RightLayout)
+        self.setLayout(TestLayout)
 
 
-class Text1(QWidget):
+class CreatPart(QDialog):
     def __init__(self, parent=None):
-        super(Text1, self).__init__(parent)
+        super(CreatPart, self).__init__(parent)
+
+        self.nameLabel = QLabel(u"实验名称：")
+        self.nameEdit = QLineEdit()
+        self.nameLabel.setBuddy(self.nameEdit)
+
+        self.formLabel = QLabel(u"实验类型：")
+        self.formCombo = QComboBox()
+        self.formCombo.addItem("WEB")
+        self.formCombo.addItem("Misc")
+        self.formLabel.setBuddy(self.formCombo)
+
+        self.introductionLabel = QLabel(u"实验介绍：")
+        self.introductionEdit = QStackedWidget()
+        introTextEdit1 = IntroTextEdit1()
+        introTextEdit2 = IntroTextEdit2()
+        self.introductionEdit.addWidget(introTextEdit1)
+        self.introductionEdit.addWidget(introTextEdit2)
+        self.introductionLabel.setBuddy(self.introductionEdit)
+
+        self.topoLabel = QLabel(u"拓扑绘制：")
+        self.topoEdit = QStackedWidget()
+        topoTextEdit1 = TopoTextEdit1()
+        topoTextEdit2 = TopoTextEdit2()
+        self.topoEdit.addWidget(topoTextEdit1)
+        self.topoEdit.addWidget(topoTextEdit2)
+        self.topoLabel.setBuddy(self.topoEdit)
+
+        self.paintButton = QPushButton(self.tr("拓扑绘制"))
+        self.saveButton = QPushButton(self.tr("保存"))
+
+        ButtonLayout = QHBoxLayout()
+        ButtonLayout.addWidget(self.paintButton)
+        ButtonLayout.addWidget(self.saveButton)
+
+        LeftLayout = QGridLayout()
+        LeftLayout.addWidget(self.nameLabel, 0, 0)
+        LeftLayout.addWidget(self.nameEdit, 0, 1)
+        LeftLayout.addWidget(self.formLabel, 1, 0)
+        LeftLayout.addWidget(self.formCombo, 1, 1)
+        LeftLayout.addWidget(self.introductionLabel, 2, 0)
+        LeftLayout.addWidget(self.introductionEdit, 2, 1)
+
+        RightLayout = QVBoxLayout()
+        RightLayout.addWidget(self.topoEdit)
+        RightLayout.addLayout(ButtonLayout)
+
+        GenLayout = QHBoxLayout()
+        GenLayout.addLayout(LeftLayout)
+        GenLayout.addWidget(self.topoLabel)
+        GenLayout.addLayout(RightLayout)
+        self.setLayout(GenLayout)
+
+
+class IntroductionText1(QWidget):
+    def __init__(self, parent=None):
+        super(IntroductionText1, self).__init__(parent)
         remarkTextEdit = QTextEdit()
         layout = QGridLayout(self)
         layout.addWidget(remarkTextEdit)
 
 
-class Text2(QWidget):
+class IntroductionText2(QWidget):
     def __init__(self, parent=None):
-        super(Text2, self).__init__(parent)
+        super(IntroductionText2, self).__init__(parent)
         remarkTextEdit = QTextEdit()
         layout = QGridLayout(self)
         layout.addWidget(remarkTextEdit)
 
 
-class Text3(QWidget):
+class InfoText1(QWidget):
     def __init__(self, parent=None):
-        super(Text3, self).__init__(parent)
+        super(InfoText1, self).__init__(parent)
         remarkTextEdit = QTextEdit()
         layout = QGridLayout(self)
         layout.addWidget(remarkTextEdit)
 
 
-class Text4(QWidget):
+class InfoText2(QWidget):
     def __init__(self, parent=None):
-        super(Text4, self).__init__(parent)
+        super(InfoText2, self).__init__(parent)
         remarkTextEdit = QTextEdit()
         layout = QGridLayout(self)
         layout.addWidget(remarkTextEdit)
 
 
-class Text5(QWidget):
+class TopoText1(QWidget):
     def __init__(self, parent=None):
-        super(Text5, self).__init__(parent)
+        super(TopoText1, self).__init__(parent)
         remarkTextEdit = QTextEdit()
         layout = QGridLayout(self)
         layout.addWidget(remarkTextEdit)
 
 
+class TopoText2(QWidget):
+    def __init__(self, parent=None):
+        super(TopoText2, self).__init__(parent)
+        remarkTextEdit = QTextEdit()
+        layout = QGridLayout(self)
+        layout.addWidget(remarkTextEdit)
+
+
+class InfoTextEdit1(QWidget):
+    def __init__(self, parent=None):
+        super(InfoTextEdit1, self).__init__(parent)
+        remarkTextEdit = QTextEdit()
+        layout = QGridLayout(self)
+        layout.addWidget(remarkTextEdit)
+
+
+class InfoTextEdit2(QWidget):
+    def __init__(self, parent=None):
+        super(InfoTextEdit2, self).__init__(parent)
+        remarkTextEdit = QTextEdit()
+        layout = QGridLayout(self)
+        layout.addWidget(remarkTextEdit)
+
+
+class TopoTextEdit1(QWidget):
+    def __init__(self, parent=None):
+        super(TopoTextEdit1, self).__init__(parent)
+        remarkTextEdit = QTextEdit()
+        layout = QGridLayout(self)
+        layout.addWidget(remarkTextEdit)
+
+
+class TopoTextEdit2(QWidget):
+    def __init__(self, parent=None):
+        super(TopoTextEdit2, self).__init__(parent)
+        remarkTextEdit = QTextEdit()
+        layout = QGridLayout(self)
+        layout.addWidget(remarkTextEdit)
+
+
+class IntroTextEdit1(QWidget):
+    def __init__(self, parent=None):
+        super(IntroTextEdit1, self).__init__(parent)
+        remarkTextEdit = QTextEdit()
+        layout = QGridLayout(self)
+        layout.addWidget(remarkTextEdit)
+
+
+class IntroTextEdit2(QWidget):
+    def __init__(self, parent=None):
+        super(IntroTextEdit2, self).__init__(parent)
+        remarkTextEdit = QTextEdit()
+        layout = QGridLayout(self)
+        layout.addWidget(remarkTextEdit)
 
 
 if __name__ == '__main__':
