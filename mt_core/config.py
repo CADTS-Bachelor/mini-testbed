@@ -1,5 +1,10 @@
 # coding=UTF-8
 
+import six
+
+ConfigParser = six.moves.configparser.ConfigParser
+
+
 class SceneConfig:
     def __init__(self):
         self.clone_type = 'link'
@@ -18,3 +23,7 @@ class Config:
     def load(self):
         # TODO load from config/mt.cfg use ConfigParser
         pass
+
+
+if __name__ == '__main__':
+    print(ConfigParser())

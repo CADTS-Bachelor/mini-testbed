@@ -21,7 +21,7 @@ class Server:
 
     def on_create(self, name, topo_content):
         topo = parse_xml_string(topo_content)
-        return self.scene_instance_manager.create_scene(topo_content, name)
+        return self.scene_instance_manager.create_scene(topo, name)
 
     def on_info(self, scene_id):
         return self.scene_instance_manager.query_scene(scene_id).to_info()

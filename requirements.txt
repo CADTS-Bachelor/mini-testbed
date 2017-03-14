@@ -1,1 +1,3 @@
-networkx, defusedxml
+networkx
+defusedxml
+six

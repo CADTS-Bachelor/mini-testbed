@@ -1,10 +1,23 @@
 # -*- coding: utf-8 -*-
-from PyQt4.QtGui import *
-from PyQt4.QtCore import *
-from PyQt4 import QtGui, QtCore
 import sys
 
-QTextCodec.setCodecForTr(QTextCodec.codecForName("utf8"))
+try:
+    import PyQt4
+except ImportError:
+    use_qt4 = False
+else:
+    use_qt4 = True
+
+if use_qt4:
+    from PyQt4.QtGui import *
+    from PyQt4.QtCore import *
+    from PyQt4 import QtGui, QtCore
+else:
+    from PyQt5.QtGui import *
+    from PyQt5.QtCore import *
+    from PyQt5 import QtGui, QtCore
+
+# QTextCodec.setCodecForTr(QTextCodec.codecForName("utf8"))
 
 
 class MainWindow(QtGui.QMainWindow):

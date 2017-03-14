@@ -1,6 +1,7 @@
 # coding=UTF-8
 
 import networkx as nx
+import six
 # for security reason, use defusedxml package instead
 try:
     import defusedxml.cElementTree as ET
@@ -9,6 +10,7 @@ except ImportError:
 import json
 
 
+@six.python_2_unicode_compatible
 class VirtualTopo:
     def __init__(self, name):
         self.name = name
@@ -32,18 +34,16 @@ class VirtualTopo:
         return self.links[name]
 
     def iter_nodes(self):
-        return self.nodes.itervalues()
+        return six.itervalues(self.nodes)
 
     def iter_links(self):
-        return self.links.itervalues()
+        return six.itervalues(self.links)
 
     def __str__(self):
-        return self.__unicode__().encode("UTF-8")
-
-    def __unicode__(self):
         return u'topo{{name={}}}'.format(self.name)
 
 
+@six.python_2_unicode_compatible
 class VirtualNode:
     CATEGORY_HOST = "Host"
     CATEGORY_SWITCH = "Switch"
@@ -80,12 +80,9 @@ class VirtualNode:
         self.config.update(config)
 
     def iter_ports(self):
-        return self.ports.itervalues()
+        return six.itervalues(self.ports)
 
     def __str__(self):
-        return self.__unicode__().encode("UTF-8")
-
-    def __unicode__(self):
         return u"node{{name={}, templateId={}, config={{{}}}}}".format(self.name,
                                                                    self.template_id,
                                                                    ', '.join([u'{}={}'.format(name, value) for name, value in self.config.items()]))
@@ -108,6 +105,7 @@ class VirtualPort:
         return u"{}.{}".format(self.node.name, self.index)
 
 
+@six.python_2_unicode_compatible
 class VirtualLink:
     def __init__(self, port1, port2):
         # ensure order for find
@@ -137,9 +135,6 @@ class VirtualLink:
         self.port2.link = self
 
     def __str__(self):
-        return self.__unicode__().encode("UTF-8")
-
-    def __unicode__(self):
         return u'link{{name={}}}'.format(self.name)
 
 
@@ -225,9 +220,9 @@ def _parse_xml(xml_tree):
 
 if __name__ == '__main__':
     topo = parse_xml_file("../data/TX2015.xml")
-    print topo
+    print(topo)
     for node in topo.iter_nodes():
-        print node
+        print(node)
 
     for link in topo.iter_links():
-        print link
+        print(link)
