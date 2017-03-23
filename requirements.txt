@@ -1,3 +1,5 @@
 networkx
 defusedxml
 six
+
+mkdocs
